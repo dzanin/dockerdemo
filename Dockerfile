@@ -2,23 +2,22 @@ FROM ubuntu
 
 LABEL maintainer="davide.zanin@supsi.ch"
 
+ARG RELEASE=1.0.0
 
-#update
-RUN apt-get -y update 
+ENV RELEASE_VERSION=${RELEASE}
 
-#install python3.7, pip3, curl
-RUN apt-get -y install python3.7 
-RUN apt-get -y install python3-pip 
-
-#install postgresql
-RUN DEBIAN_FRONTEND=noninteractive apt-get -y install postgresql postgresql-contrib
+# update, install python3.7, pip3, postgresql
+RUN apt-get -y update &&\
+    apt-get -y install python3.7 &&\
+    apt-get -y install python3-pip &&\
+    DEBIAN_FRONTEND=noninteractive apt-get -y install postgresql postgresql-contrib
 
 
 RUN apt-get -y install wget &&\
-    wget https://github.com/dzanin/dockerdemo/archive/v2.0.0.tar.gz &&\
-    tar xvzf v2.0.0.tar.gz &&\
+    wget https://github.com/dzanin/dockerdemo/archive/v${RELEASE_VERSION}.tar.gz &&\
+    tar xvzf v${RELEASE_VERSION}.tar.gz &&\
     mkdir /usr/src/app &&\
-    cp -r dockerdemo-2.0.0/app/* /usr/src/app 
+    cp -r dockerdemo-${RELEASE_VERSION}/app/* /usr/src/app 
 
 
 # Create app directory
@@ -37,7 +36,7 @@ USER postgres
 # Note: here we use ``&&\`` to run commands one after the other - the ``\``
 #       allows the RUN command to span multiple lines.
 RUN /etc/init.d/postgresql start &&\
-    psql --command "CREATE USER docker WITH PASSWORD 'docker'; SET TIME ZONE 'Europe/Zurich'" &&\
+    psql --command "CREATE USER docker WITH SUPERUSER PASSWORD 'docker'; SET TIME ZONE 'Europe/Zurich'" &&\
     createdb -O docker docker &&\
     psql -u docker -d docker -a -f table.sql 
 
