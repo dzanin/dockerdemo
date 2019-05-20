@@ -4,28 +4,17 @@ LABEL maintainer="davide.zanin@supsi.ch"
 
 
 #update
-RUN apt-get -y update 
+RUN apt-get -y update
 
 #install python3.7, pip3, curl
 RUN apt-get -y install python3.7 
-RUN apt-get -y install python3-pip 
+RUN apt-get -y install python3-pip
+RUN apt-get -y install curl
 
 #install postgresql
 RUN DEBIAN_FRONTEND=noninteractive apt-get -y install postgresql postgresql-contrib
 
-
-RUN apt-get -y install wget &&\
-    wget https://github.com/dzanin/dockerdemo/archive/v2.0.0.tar.gz &&\
-    tar xvzf v2.0.0.tar.gz &&\
-    mkdir /usr/src/app &&\
-    cp -r dockerdemo-2.0.0/app/* /usr/src/app 
-
-
-# Create app directory
-WORKDIR /usr/src/app
-
-# Install requirements
-RUN  pip3 install -r requirements.txt
+RUN curl -s https://github.com/dzanin/dockerdemo/releases/latest | wget -qi -
 
 
 # Run the rest of the commands as the ``postgres`` user 
@@ -37,11 +26,8 @@ USER postgres
 # Note: here we use ``&&\`` to run commands one after the other - the ``\``
 #       allows the RUN command to span multiple lines.
 RUN /etc/init.d/postgresql start &&\
-    psql --command "CREATE USER docker WITH PASSWORD 'docker'; SET TIME ZONE 'Europe/Zurich'" &&\
-    createdb -O docker docker &&\
-    psql -u docker -d docker -a -f table.sql 
-
-
+    psql --command "CREATE USER docker WITH SUPERUSER PASSWORD 'docker'; SET TIME ZONE 'Europe/Zurich'" &&\
+    createdb -O docker docker 
 #     psql --command "CREATE TABLE account(
 #  user_id serial PRIMARY KEY,
 #  username VARCHAR (50) UNIQUE NOT NULL,
@@ -64,8 +50,12 @@ USER root
 #RUN adduser docker 
 
 
-# COPY /usr/src/source/app /usr/src/app
+COPY app /usr/src/app
 
+# Create app directory
+WORKDIR /usr/src/app
+
+RUN pip3 install -r requirements.txt
 
 EXPOSE 80
 
