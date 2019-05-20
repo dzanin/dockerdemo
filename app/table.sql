@@ -7,4 +7,4 @@ CREATE TABLE account(
  last_login TIMESTAMP
 ); 
 
-ALTER TABLE  OWNER TO docker;
+ALTER TABLE account OWNER TO docker;

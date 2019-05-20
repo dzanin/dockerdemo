@@ -1,3 +1,5 @@
+# execute with:
+# sudo docker build --build-arg RELEASE=<version number, example x.x.x> -t davidezanin/demodocker:vx.x.x . 
 FROM ubuntu
 
 LABEL maintainer="davide.zanin@supsi.ch"
@@ -14,8 +16,8 @@ RUN apt-get -y update &&\
 
 
 RUN apt-get -y install wget &&\
-    wget https://github.com/dzanin/dockerdemo/archive/v${RELEASE_VERSION}.tar.gz &&\
-    tar xvzf v${RELEASE_VERSION}.tar.gz &&\
+    wget https://github.com/dzanin/dockerdemo/archive/${RELEASE_VERSION}.tar.gz &&\
+    tar xvzf ${RELEASE_VERSION}.tar.gz &&\
     mkdir /usr/src/app &&\
     cp -r dockerdemo-${RELEASE_VERSION}/app/* /usr/src/app 
 
@@ -25,7 +27,6 @@ WORKDIR /usr/src/app
 
 # Install requirements
 RUN  pip3 install -r requirements.txt
-
 
 # Run the rest of the commands as the ``postgres`` user 
 USER postgres
@@ -38,8 +39,8 @@ USER postgres
 RUN /etc/init.d/postgresql start &&\
     psql --command "CREATE USER docker WITH SUPERUSER PASSWORD 'docker'; SET TIME ZONE 'Europe/Zurich'" &&\
     createdb -O docker docker &&\
-    psql -u docker -d docker -a -f table.sql 
-
+    psql -U postgres -d docker -a -f table.sql 
+#   PGPASSWORD=docker psql -d docker -U docker -w
 
 #     psql --command "CREATE TABLE account(
 #  user_id serial PRIMARY KEY,
