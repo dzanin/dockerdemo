@@ -1,7 +1,7 @@
 import asyncpg
+import asyncio
 
-
-con = await asyncpg.connect(user='docker',database='docker',password='docker' host='localhost',)
-res=await con.fetchval('select * from account')
-print(res)
-await con.close()
+conn = await asyncpg.connect(user='docker', password='docker', database='docker', host='docker')
+values = await conn.fetch('''SELECT * FROM account''')
+print(values)
+await conn.close()
