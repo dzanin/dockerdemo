@@ -4,7 +4,7 @@ FROM ubuntu
 
 LABEL maintainer="davide.zanin@supsi.ch"
 
-ARG RELEASE=1.0.0
+ARG RELEASE=5.1.3
 
 ENV RELEASE_VERSION=${RELEASE}
 
@@ -28,6 +28,11 @@ WORKDIR /usr/src/app
 
 # Install requirements
 RUN  pip3 install -r requirements.txt
+
+RUN set -eux; \
+	groupadd -r docker --gid=1001; \
+	useradd -r -g docker --uid=1001 --no-create-home docker; 
+
 
 # Run the rest of the commands as the ``postgres`` user 
 USER postgres
@@ -53,7 +58,7 @@ RUN /etc/init.d/postgresql start &&\
 # ); 
 #     ALTER TABLE  OWNER TO <username>"
 
-RUN echo "local   all             docker                                  md5" >> /etc/postgresql/10/main/pg_hba.conf
+#RUN echo "local   all             docker                                  md5" >> /etc/postgresql/10/main/pg_hba.conf
 
 
 # Add VOLUMEs to allow backup of config, logs and databases
@@ -68,8 +73,12 @@ VOLUME  ["/etc/postgresql", "/var/log/postgresql", "/var/lib/postgresql"]
 # COPY /usr/src/source/app /usr/src/app
 
 
+
 EXPOSE 80
 
+#ENTRYPOINT ["/bin/bash", "-c", "service postgresql start"]
+
+USER root
 #/usr/lib/postgresql/10/bin/pg_ctl -D /var/lib/postgresql/10/main -l logfile start
-CMD ["/usr/lib/postgresql/10/bin/pg_ctl", "-D","/var/lib/postgresql/10/main","-l", "logfile", "start" ]
+CMD ["/bin/bash", "-c", "service postgresql start"]
 #CMD [ "python", "app.py" ]
