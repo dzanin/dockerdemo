@@ -1,13 +1,7 @@
-import psycopg2
+import asyncpg
 
-conn = psycopg2.connect(host="localhost",database="docker", user="docker", password="docker")
-cur = conn.cursor()
 
-cur.execute('SELECT version()')
-
-# display the PostgreSQL database server version
-db_version = cur.fetchone()
-print(db_version)
-
-# close the communication with the PostgreSQL
-cur.close()
+con = await asyncpg.connect(user='docker',database='docker',password='docker' host='localhost',)
+res=await con.fetchval('select * from account')
+print(res)
+await con.close()

@@ -21,13 +21,15 @@ RUN apt-get -y install wget &&\
     mkdir /usr/src/app &&\
     cp -r dockerdemo-${RELEASE_VERSION}/app/* /usr/src/app  &&\
     apt-get -y install nano
+RUN apt-get install python3-psycopg2
+
 
 
 # Create app directory
 WORKDIR /usr/src/app
 
 # Install requirements
-RUN  pip3 install -r requirements.txt
+#RUN  pip3 install -r requirements.txt
 
 RUN set -eux; \
 	groupadd -r docker --gid=1001; \
