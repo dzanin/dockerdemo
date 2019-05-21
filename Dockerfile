@@ -29,7 +29,7 @@ RUN apt-get install python3-psycopg2
 WORKDIR /usr/src/app
 
 # Install requirements
-#RUN  pip3 install -r requirements.txt
+RUN  pip3 install -r requirements.txt
 
 RUN set -eux; \
 	groupadd -r docker --gid=1001; \
