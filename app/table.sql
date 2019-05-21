@@ -10,7 +10,7 @@ CREATE TABLE account(
 ALTER TABLE account OWNER TO docker;
 
 INSERT INTO account
-VALUES (1, 'Marco', 'pass', 'mail','12-03-2014','21-05-2019');
+VALUES (1, 'Marco', 'pass', 'mail');
 
 INSERT INTO account
-VALUES (2, 'Alessia', 'pass', 'mail','12-03-2014','21-05-2019');
+VALUES (2, 'Alessia', 'pass2', 'mail2');

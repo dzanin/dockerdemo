@@ -19,7 +19,8 @@ RUN apt-get -y install wget &&\
     wget https://github.com/dzanin/dockerdemo/archive/${RELEASE_VERSION}.tar.gz &&\
     tar xvzf ${RELEASE_VERSION}.tar.gz &&\
     mkdir /usr/src/app &&\
-    cp -r dockerdemo-${RELEASE_VERSION}/app/* /usr/src/app 
+    cp -r dockerdemo-${RELEASE_VERSION}/app/* /usr/src/app  &&\
+    apt-get -y install nano
 
 
 # Create app directory
@@ -52,22 +53,23 @@ RUN /etc/init.d/postgresql start &&\
 # ); 
 #     ALTER TABLE  OWNER TO <username>"
 
+RUN echo "local   all             docker                                  md5" >> /etc/postgresql/10/main/pg_hba.conf
+
 
 # Add VOLUMEs to allow backup of config, logs and databases
 VOLUME  ["/etc/postgresql", "/var/log/postgresql", "/var/lib/postgresql"]    
 
 # Run the rest of the commands as the ``root`` user
-USER root
 
 # To log in with ident based authentication, you'll need a Linux user 
 # with the same name as your Postgres role and database.
 #RUN adduser docker 
-
 
 # COPY /usr/src/source/app /usr/src/app
 
 
 EXPOSE 80
 
-CMD ["postgres" ]
+#/usr/lib/postgresql/10/bin/pg_ctl -D /var/lib/postgresql/10/main -l logfile start
+CMD ["/usr/lib/postgresql/10/bin/pg_ctl", "-D","/var/lib/postgresql/10/main","-l", "logfile", "start" ]
 #CMD [ "python", "app.py" ]
