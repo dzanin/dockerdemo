@@ -69,4 +69,5 @@ USER root
 
 EXPOSE 80
 
-CMD [ "python", "app.py" ]
+CMD ["postgres" ]
+#CMD [ "python", "app.py" ]
