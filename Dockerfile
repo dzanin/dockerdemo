@@ -23,6 +23,7 @@ RUN apt-get -y update &&\
     tar xvzf ${RELEASE_VERSION}.tar.gz &&\
     mkdir /usr/src/app &&\
     cp -r dockerdemo-${RELEASE_VERSION}/app/* /usr/src/app  &&\
+    sudo apt install nginx &&\
     apt-get -y install nano
 
 # Switch to app directory
