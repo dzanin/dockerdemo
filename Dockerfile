@@ -1,37 +1,38 @@
-# execute with:
-# sudo docker build --build-arg RELEASE=<version number, example x.x.x> -t davidezanin/demodocker:vx.x.x . 
+# Build with (x.x.x means release version number):
+# sudo docker build --build-arg RELEASE=x.x.x -t davidezanin/demodocker:vx.x.x . 
+# Test with:
+# sudo docker run -it --rm --name demodockerContainer -p 8080:80 davidezanin/demodocker:vx.x.x /bin/sh 
+# sudo docker --name demodockerContainer -p 8080:80 davidezanin/demodocker:vx.x.x
+
 FROM ubuntu
 
 LABEL maintainer="davide.zanin@supsi.ch"
 
-ARG RELEASE=5.1.3
-
+# Setting a default arg that become an env variable,
+# you can passing it during build with --build-arg RELEASE=x.x.x
+ARG RELEASE=7.0.0
 ENV RELEASE_VERSION=${RELEASE}
 
-# update, install python3.7, pip3, postgresql
+# Update, install python3.7, postgresql, download release passed as arg and copy in /usr/src/app
 RUN apt-get -y update &&\
     apt-get -y install python3.7 &&\
     apt-get -y install python3-pip &&\
-    DEBIAN_FRONTEND=noninteractive apt-get -y install postgresql postgresql-contrib
-
-
-RUN apt-get -y install wget &&\
+    DEBIAN_FRONTEND=noninteractive apt-get -y install postgresql postgresql-contrib &&\
+    apt-get -y install wget &&\
     wget https://github.com/dzanin/dockerdemo/archive/${RELEASE_VERSION}.tar.gz &&\
     tar xvzf ${RELEASE_VERSION}.tar.gz &&\
     mkdir /usr/src/app &&\
     cp -r dockerdemo-${RELEASE_VERSION}/app/* /usr/src/app  &&\
     apt-get -y install nano
 
-
-# Create app directory
+# Switch to app directory
 WORKDIR /usr/src/app
 
-# Install requirementsapt
-RUN  python3.7 -m pip install -r requirements.txt
-
-RUN set -eux; \
-	groupadd -r docker --gid=1001; \
-	useradd -r -g docker --uid=1001 --no-create-home docker; 
+# Install requirements, add user/group docker
+RUN  python3.7 -m pip install -r requirements.txt &&\
+     set -eux; \
+	 groupadd -r docker --gid=1001; \
+	 useradd -r -g docker --uid=1001 --no-create-home docker; 
 
 
 # Run the rest of the commands as the ``postgres`` user 
@@ -43,42 +44,24 @@ USER postgres
 # Note: here we use ``&&\`` to run commands one after the other - the ``\``
 #       allows the RUN command to span multiple lines.
 RUN /etc/init.d/postgresql start &&\
-    psql --command "CREATE USER docker WITH SUPERUSER PASSWORD 'docker'; SET TIME ZONE 'Europe/Zurich'" &&\
+    psql --command "CREATE USER docker WITH SUPERUSER PASSWORD 'docker'; SET TIME ZONE 'Europe/Zurich';" &&\
     createdb -O docker docker &&\
     psql -U postgres -d docker -a -f table.sql 
 #   PGPASSWORD=docker psql -d docker -U docker -w
-
-#     psql --command "CREATE TABLE account(
-#  user_id serial PRIMARY KEY,
-#  username VARCHAR (50) UNIQUE NOT NULL,
-#  password VARCHAR (50) NOT NULL,
-#  email VARCHAR (355) UNIQUE NOT NULL,
-#  created_on TIMESTAMP NOT NULL,
-#  last_login TIMESTAMP
-# ); 
-#     ALTER TABLE  OWNER TO <username>"
-
 #RUN echo "local   all             docker                                  md5" >> /etc/postgresql/10/main/pg_hba.conf
-
 
 # Add VOLUMEs to allow backup of config, logs and databases
 VOLUME  ["/etc/postgresql", "/var/log/postgresql", "/var/lib/postgresql"]    
 
-# Run the rest of the commands as the ``root`` user
-
-# To log in with ident based authentication, you'll need a Linux user 
-# with the same name as your Postgres role and database.
-#RUN adduser docker 
-
 # COPY /usr/src/source/app /usr/src/app
-
-
 
 EXPOSE 80
 
 #ENTRYPOINT ["/bin/bash", "-c", "service postgresql start"]
 
+# Run the rest of the commands as the ``root`` user
 USER root
+
 #/usr/lib/postgresql/10/bin/pg_ctl -D /var/lib/postgresql/10/main -l logfile start
 CMD ["/bin/bash", "-c", "service postgresql start"]
 #CMD [ "python", "app.py" ]
