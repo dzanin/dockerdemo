@@ -26,8 +26,8 @@ RUN apt-get -y install wget &&\
 # Create app directory
 WORKDIR /usr/src/app
 
-# Install requirements
-RUN  pip3 install -r requirements.txt
+# Install requirementsapt
+RUN  python3.7 -m pip install -r requirements.txt
 
 RUN set -eux; \
 	groupadd -r docker --gid=1001; \
