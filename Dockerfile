@@ -21,8 +21,6 @@ RUN apt-get -y install wget &&\
     mkdir /usr/src/app &&\
     cp -r dockerdemo-${RELEASE_VERSION}/app/* /usr/src/app  &&\
     apt-get -y install nano
-RUN apt-get install python3-psycopg2
-
 
 
 # Create app directory
