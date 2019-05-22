@@ -4,7 +4,7 @@ import asyncpg
 async def main():
     # Establish a connection to an existing database named "test"
     # as a "postgres" user.
-    conn = await asyncpg.connect(user='docker', password='docker', database='docker', host='docker')
+    conn = await asyncpg.connect(user='docker', password='docker', database='docker', host='localhost')
     # Select a row from the table.
     res = await conn.fetch('''SELECT * FROM account''')
     # *row* now contains
