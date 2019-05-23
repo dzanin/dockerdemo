@@ -9,7 +9,7 @@ if [ $status -ne 0 ]; then
 fi
 
 # Start the second process
-service postgresql start -D
+service postgresql start
 status=$?
 if [ $status -ne 0 ]; then
   echo "Failed to start my_second_process: $status"
