@@ -2,7 +2,7 @@
 # sudo docker build --build-arg RELEASE=x.x.x -t davidezanin/demodocker:vx.x.x . 
 # Test with:
 # sudo docker run -it --rm --name demodockerContainer -p 8080:80 davidezanin/demodocker:vx.x.x /bin/sh 
-# sudo docker --name demodockerContainer -p 8080:80 davidezanin/demodocker:vx.x.x
+# sudo docker run --name demodockerContainer -p 8080:80 davidezanin/demodocker:vx.x.x
 
 FROM ubuntu
 
@@ -23,7 +23,7 @@ RUN apt-get -y update &&\
     tar xvzf ${RELEASE_VERSION}.tar.gz &&\
     mkdir /usr/src/app &&\
     cp -r dockerdemo-${RELEASE_VERSION}/app/* /usr/src/app  &&\
-    sudo apt install nginx &&\
+    apt-get -y install nginx &&\
     apt-get -y install nano
 
 # Switch to app directory
@@ -54,15 +54,21 @@ RUN /etc/init.d/postgresql start &&\
 # Add VOLUMEs to allow backup of config, logs and databases
 VOLUME  ["/etc/postgresql", "/var/log/postgresql", "/var/lib/postgresql"]    
 
+USER root
+
 # COPY /usr/src/source/app /usr/src/app
+COPY /app/my_wrapper_script.sh my_wrapper_script.sh
+RUN chmod +x my_wrapper_script.sh
+
+#ENTRYPOINT ["/bin/bash", "-c", "service postgresql start", ]
+
+# Run the rest of the commands as the ``root`` user
 
 EXPOSE 80
 
-#ENTRYPOINT ["/bin/bash", "-c", "service postgresql start"]
-
-# Run the rest of the commands as the ``root`` user
-USER root
-
 #/usr/lib/postgresql/10/bin/pg_ctl -D /var/lib/postgresql/10/main -l logfile start
-CMD ["/bin/bash", "-c", "service postgresql start"]
-#CMD [ "python", "app.py" ]
+#ENTRYPOINT ["/bin/bash", "-c", "service postgresql start && service nginx start" ]
+#"&&", "service", "nginx", "start", "&&", "python3.7", "app.py"]
+#CMD ["/bin/bash", "-c", "service nginx start"]
+#CMD ["/bin/bash", "-c","service nginx start", "&&", "/usr/lib/postgresql/10/bin/postgres", "-D", "/var/lib/postgresql/10/main", "-c", "config_file=/etc/postgresql/10/main/postgresql.conf"]
+CMD ["./my_wrapper_script.sh"]
