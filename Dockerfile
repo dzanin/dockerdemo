@@ -57,7 +57,6 @@ VOLUME  ["/etc/postgresql", "/var/log/postgresql", "/var/lib/postgresql"]
 USER root
 
 # COPY /usr/src/source/app /usr/src/app
-COPY /app/my_wrapper_script.sh my_wrapper_script.sh
 RUN chmod +x my_wrapper_script.sh
 
 #ENTRYPOINT ["/bin/bash", "-c", "service postgresql start", ]
