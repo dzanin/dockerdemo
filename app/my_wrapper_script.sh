@@ -37,11 +37,15 @@ while sleep 10; do
   ps aux |grep postgresql |grep -q -v grep
   PROCESS_2_STATUS=$?
   #echo postgres: $PROCESS_2_STATUS
+  ps aux |grep app |grep -q -v grep
+  PROCESS_3_STATUS=$?
+  #echo app.py: $PROCESS_3_STATUS
+
 
   # If the greps above find anything, they exit with 0 status
   # If they are not both 0, then something is wrong
-  if [ $PROCESS_1_STATUS -ne 0 -o $PROCESS_2_STATUS -ne 0 ]; then
-    echo -e "One of the processes has already exited (1 means exited): \n -Nginx: $PROCESS_1_STATUS, \n -Postgresql: $PROCESS_2_STATUS "
+  if [ $PROCESS_1_STATUS -ne 0 -o $PROCESS_2_STATUS -ne 0 -o $PROCESS_3_STATUS -ne 0 ]; then
+    echo -e "One of the processes has already exited (1 means exited): \n -Nginx: $PROCESS_1_STATUS, \n -Postgresql: $PROCESS_2_STATUS, \n -Tornado: $PROCESS_3_STATUS "
     exit 1
   fi
 done

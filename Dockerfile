@@ -65,6 +65,7 @@ RUN chmod +x my_wrapper_script.sh
 # Run the rest of the commands as the ``root`` user
 
 EXPOSE 80
+EXPOSE 8888
 
 #/usr/lib/postgresql/10/bin/pg_ctl -D /var/lib/postgresql/10/main -l logfile start
 #ENTRYPOINT ["/bin/bash", "-c", "service postgresql start && service nginx start" ]
