@@ -16,13 +16,13 @@ if [ $status -ne 0 ]; then
   exit $status
 fi
 
-# # Start the third process
-# /bin/bash -c python3.7 app.py -D
-# status=$?
-# if [ $status -ne 0 ]; then
-#   echo "Failed to start my_third_process: $status"
-#   exit $status
-# fi
+# Start the third process
+python3.7 app.py -D
+status=$?
+if [ $status -ne 0 ]; then
+  echo "Failed to start my_third_process: $status"
+  exit $status
+fi
 
 # Naive check runs checks once a minute to see if either of the processes exited.
 # This illustrates part of the heavy lifting you need to do if you want to run

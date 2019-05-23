@@ -2,6 +2,7 @@
 # sudo docker build --build-arg RELEASE=x.x.x -t davidezanin/demodocker:vx.x.x . 
 # Test with:
 # sudo docker run -it --rm --name demodockerContainer -p 8080:80 davidezanin/demodocker:vx.x.x /bin/sh 
+# Run with:
 # sudo docker run --name demodockerContainer -p 8080:80 davidezanin/demodocker:vx.x.x
 
 FROM ubuntu
