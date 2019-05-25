@@ -62,7 +62,10 @@ RUN chmod +x my_wrapper_script.sh &&\
     rm /etc/nginx/sites-enabled/default &&\
     mkdir -p /var/www/example.com/html &&\
     chown -R $USER:$USER /var/www/example.com/html &&\
-    mv index.html /var/www/example.com/html/
+    mv index.html /var/www/example.com/html/ &&\
+    mv example.com /etc/nginx/sites-available/ &&\
+    ln -s /etc/nginx/sites-available/example.com /etc/nginx/sites-enabled/
+
 
 
 
