@@ -58,7 +58,13 @@ VOLUME  ["/etc/postgresql", "/var/log/postgresql", "/var/lib/postgresql"]
 USER root
 
 # COPY /usr/src/source/app /usr/src/app
-RUN chmod +x my_wrapper_script.sh
+RUN chmod +x my_wrapper_script.sh &&\
+    rm /etc/nginx/sites-enabled/default &&\
+    mkdir -p /var/www/example.com/html &&\
+    chown -R $USER:$USER /var/www/example.com/html &&\
+    mv index.html /var/www/example.com/html/
+
+
 
 #ENTRYPOINT ["/bin/bash", "-c", "service postgresql start", ]
 
