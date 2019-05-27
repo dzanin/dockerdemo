@@ -10,7 +10,7 @@ FROM ubuntu
 LABEL maintainer="davide.zanin@supsi.ch"
 # Setting a default arg that become an env variable,
 # you can passing it during build with --build-arg RELEASE=x.x.x
-ARG RELEASE=7.1.0
+ARG RELEASE=7.1.1
 ENV RELEASE_VERSION=${RELEASE}
 ENV DB_USER='docker'
 ENV DB_NAME='docker'
@@ -40,10 +40,10 @@ RUN apt-get -y update &&\
 #     echo $DB_PASS
 # ENV DBX_PASS=$DB_PASS
 
-RUN echo ${DBX_PASS}
-
 # Switch to app directory
 WORKDIR /usr/src/app
+
+RUN ls
 
 # Install requirements, add user/group docker
 RUN  python3.7 -m pip install -r requirements.txt &&\
@@ -81,8 +81,8 @@ RUN chmod +x my_wrapper_script.sh &&\
     chown -R $USER:$USER /var/www/example.com/html &&\
     mv index.html /var/www/example.com/html/ &&\
     mv example.com /etc/nginx/sites-available/ &&\
+    mv proxy.conf /etc/nginx/proxy.conf &&\
     ln -s /etc/nginx/sites-available/example.com /etc/nginx/sites-enabled/ 
-RUN mv proxy.conf /etc/nginx/
 
 
 
