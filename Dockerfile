@@ -8,15 +8,19 @@
 FROM ubuntu
 
 LABEL maintainer="davide.zanin@supsi.ch"
-
 # Setting a default arg that become an env variable,
 # you can passing it during build with --build-arg RELEASE=x.x.x
 ARG RELEASE=7.1.0
 ENV RELEASE_VERSION=${RELEASE}
 ENV DB_USER='docker'
-ENV DB_PASS='docker'
 ENV DB_NAME='docker'
-ENV TIME_ZONE='Europe/Zurich'
+ENV TZ 'Europe/Rome'
+RUN echo $TZ > /etc/timezone && \
+    apt-get update && apt-get install -y tzdata && \
+    rm /etc/localtime && \
+    ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && \
+    dpkg-reconfigure -f noninteractive tzdata && \
+    apt-get clean
 
 # Update, install python3.7, postgresql, download release passed as arg and copy in /usr/src/app
 RUN apt-get -y update &&\
@@ -29,7 +33,14 @@ RUN apt-get -y update &&\
     mkdir /usr/src/app &&\
     cp -r dockerdemo-${RELEASE_VERSION}/app/* /usr/src/app  &&\
     apt-get -y install nginx &&\
+    apt-get install -y pwgen &&\
     apt-get -y install nano
+
+# RUN DB_PASS=$(pwgen) &&\
+#     echo $DB_PASS
+# ENV DBX_PASS=$DB_PASS
+
+RUN echo ${DBX_PASS}
 
 # Switch to app directory
 WORKDIR /usr/src/app
@@ -50,7 +61,9 @@ USER postgres
 # Note: here we use ``&&\`` to run commands one after the other - the ``\``
 #       allows the RUN command to span multiple lines.
 RUN /etc/init.d/postgresql start &&\
-    psql --command "CREATE USER ${DB_USER} WITH PASSWORD ${DB_PASS}; SET TIME ZONE ${TIME_ZONE};" &&\
+    DB_PASS=$(pwgen) &&\
+    echo $DB_PASS &&\
+    psql --command "CREATE USER ${DB_USER} WITH PASSWORD '$DB_PASS'; SET TIME ZONE '${TZ}';" &&\
     createdb -O ${DB_USER} ${DB_NAME} &&\
     psql -U postgres -d ${DB_NAME} -a -f table.sql 
 #   PGPASSWORD=docker psql -d docker -U docker -w
@@ -68,17 +81,17 @@ RUN chmod +x my_wrapper_script.sh &&\
     chown -R $USER:$USER /var/www/example.com/html &&\
     mv index.html /var/www/example.com/html/ &&\
     mv example.com /etc/nginx/sites-available/ &&\
-    ln -s /etc/nginx/sites-available/example.com /etc/nginx/sites-enabled/
+    ln -s /etc/nginx/sites-available/example.com /etc/nginx/sites-enabled/ 
+RUN mv proxy.conf /etc/nginx/
 
 
 
 
-#ENTRYPOINT ["/bin/bash", "-c", "service postgresql start", ]
+# ENTRYPOINT ["/bin/bash", "-c", "service postgresql start", ]
 
 # Run the rest of the commands as the ``root`` user
 
 EXPOSE 80
-EXPOSE 8888
 
 #/usr/lib/postgresql/10/bin/pg_ctl -D /var/lib/postgresql/10/main -l logfile start
 #ENTRYPOINT ["/bin/bash", "-c", "service postgresql start && service nginx start" ]

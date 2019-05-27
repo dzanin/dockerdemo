@@ -7,6 +7,11 @@ server {
 
         server_name example.com www.example.com;
 
+        location /prova/ {
+                proxy_pass      http://localhost:8888/;
+                include         /etc/nginx/proxy.conf;
+        }
+
         location / {
                 try_files $uri $uri/ =404;
         }
