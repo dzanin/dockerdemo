@@ -11,8 +11,12 @@ LABEL maintainer="davide.zanin@supsi.ch"
 
 # Setting a default arg that become an env variable,
 # you can passing it during build with --build-arg RELEASE=x.x.x
-ARG RELEASE=7.0.0
+ARG RELEASE=7.1.0
 ENV RELEASE_VERSION=${RELEASE}
+ENV DB_USER='docker'
+ENV DB_PASS='docker'
+ENV DB_NAME='docker'
+ENV TIME_ZONE='Europe/Zurich'
 
 # Update, install python3.7, postgresql, download release passed as arg and copy in /usr/src/app
 RUN apt-get -y update &&\
@@ -33,8 +37,8 @@ WORKDIR /usr/src/app
 # Install requirements, add user/group docker
 RUN  python3.7 -m pip install -r requirements.txt &&\
      set -eux; \
-	 groupadd -r docker --gid=1001; \
-	 useradd -r -g docker --uid=1001 --no-create-home docker; 
+	 groupadd -r ${DB_USER} --gid=1001; \
+	 useradd -r -g ${DB_USER} --uid=1001 --no-create-home ${DB_USER}; 
 
 
 # Run the rest of the commands as the ``postgres`` user 
@@ -46,9 +50,9 @@ USER postgres
 # Note: here we use ``&&\`` to run commands one after the other - the ``\``
 #       allows the RUN command to span multiple lines.
 RUN /etc/init.d/postgresql start &&\
-    psql --command "CREATE USER docker WITH SUPERUSER PASSWORD 'docker'; SET TIME ZONE 'Europe/Zurich';" &&\
-    createdb -O docker docker &&\
-    psql -U postgres -d docker -a -f table.sql 
+    psql --command "CREATE USER ${DB_USER} WITH PASSWORD ${DB_PASS}; SET TIME ZONE ${TIME_ZONE};" &&\
+    createdb -O ${DB_USER} ${DB_NAME} &&\
+    psql -U postgres -d ${DB_NAME} -a -f table.sql 
 #   PGPASSWORD=docker psql -d docker -U docker -w
 #RUN echo "local   all             docker                                  md5" >> /etc/postgresql/10/main/pg_hba.conf
 
