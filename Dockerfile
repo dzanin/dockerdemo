@@ -12,7 +12,7 @@ LABEL maintainer="davide.zanin@supsi.ch"
 # Setting default args that become an env variable,
 # you can passing it during build with --build-arg RELEASE=x.x.x
 # Setting Release, Time Zone and DB parameters
-ARG A_RELEASE=7.1.1
+ARG A_RELEASE=7.1.3
 ARG A_DB_USER='docker'
 ARG A_DB_PASS='docker'
 ARG A_DB_NAME='docker'
@@ -40,13 +40,13 @@ RUN apt-get -y update &&\
     apt-get -y install wget &&\
     wget https://github.com/dzanin/dockerdemo/archive/${RELEASE_VERSION}.tar.gz &&\
     tar xvzf ${RELEASE_VERSION}.tar.gz &&\
-    mkdir /usr/src/app &&\
-    mv dockerdemo-${RELEASE_VERSION}/app/* /usr/src/app  &&\
+    mkdir -p /usr/src/bms/api &&\
+    mv dockerdemo-${RELEASE_VERSION}/app/* /usr/src/bms/api/  &&\
     apt-get -y install nginx &&\
     apt-get -y install nano
 
 # Switch to app directory
-WORKDIR /usr/src/app
+WORKDIR /usr/src/bms/api
 
 # Install requirements, add user/group docker
 RUN  python3.7 -m pip install -r requirements.txt &&\
@@ -73,11 +73,12 @@ VOLUME  ["/etc/postgresql", "/var/log/postgresql", "/var/lib/postgresql"]
 USER root
 
 
-RUN chmod +x my_wrapper_script.sh &&\
+RUN chmod +x config/my_wrapper_script.sh &&\
     rm /etc/nginx/sites-enabled/default &&\
     mkdir -p /var/www/example.com/html &&\
-    chown -R $USER:$USER /var/www/example.com/html &&\
-    mv html/index.html /var/www/example.com/html/ &&\
+#    chown -R $USER:$USER /var/www/example.com/html &&\
+#    mv html/index.html /var/www/example.com/html/ &&\
+    chown -R $USER:$USER /usr/src/bms/api/html &&\
     mv config/example.com /etc/nginx/sites-available/ &&\
     mv config/proxy.conf /etc/nginx/proxy.conf &&\
     ln -s /etc/nginx/sites-available/example.com /etc/nginx/sites-enabled/ 
