@@ -24,7 +24,7 @@ ENV DB_PASS=${A_DB_PASS}
 ENV DB_NAME=${A_DB_NAME}
 ENV TZ=${A_TZ}
 
-#Adjusting Timezone in the system
+# Adjusting Timezone in the system
 RUN echo $TZ > /etc/timezone && \
     apt-get update && apt-get install -y tzdata && \
     rm /etc/localtime && \
@@ -41,7 +41,7 @@ RUN apt-get -y update &&\
     wget https://github.com/dzanin/dockerdemo/archive/${RELEASE_VERSION}.tar.gz &&\
     tar xvzf ${RELEASE_VERSION}.tar.gz &&\
     mkdir /usr/src/app &&\
-    cp -r dockerdemo-${RELEASE_VERSION}/app/* /usr/src/app  &&\
+    mv dockerdemo-${RELEASE_VERSION}/app/* /usr/src/app  &&\
     apt-get -y install nginx &&\
     apt-get -y install nano
 
@@ -64,7 +64,7 @@ USER postgres
 RUN /etc/init.d/postgresql start &&\
     psql --command "CREATE USER ${DB_USER} WITH PASSWORD '${DB_PASS}'; SET TIME ZONE '${TZ}';" &&\
     createdb -O ${DB_USER} ${DB_NAME} &&\
-    psql -U postgres -d ${DB_NAME} -a -f table.sql
+    psql -U postgres -d ${DB_NAME} -a -f db/table.sql
 
 # Add VOLUMEs to allow backup of config, logs and databases
 VOLUME  ["/etc/postgresql", "/var/log/postgresql", "/var/lib/postgresql"]    
@@ -77,9 +77,9 @@ RUN chmod +x my_wrapper_script.sh &&\
     rm /etc/nginx/sites-enabled/default &&\
     mkdir -p /var/www/example.com/html &&\
     chown -R $USER:$USER /var/www/example.com/html &&\
-    mv index.html /var/www/example.com/html/ &&\
-    mv example.com /etc/nginx/sites-available/ &&\
-    mv proxy.conf /etc/nginx/proxy.conf &&\
+    mv html/index.html /var/www/example.com/html/ &&\
+    mv config/example.com /etc/nginx/sites-available/ &&\
+    mv config/proxy.conf /etc/nginx/proxy.conf &&\
     ln -s /etc/nginx/sites-available/example.com /etc/nginx/sites-enabled/ 
 
 #ENTRYPOINT [ "./my_wrapper_script.sh" ]
@@ -87,4 +87,4 @@ RUN chmod +x my_wrapper_script.sh &&\
 # Expose port 80
 EXPOSE 80
 
-CMD ["./my_wrapper_script.sh"]
+CMD ["./config/my_wrapper_script.sh"]
