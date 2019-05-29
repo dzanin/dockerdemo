@@ -12,7 +12,7 @@ LABEL maintainer="davide.zanin@supsi.ch"
 # Setting default args that become an env variable,
 # you can passing it during build with --build-arg RELEASE=x.x.x
 # Setting Release, Time Zone and DB parameters
-ARG A_RELEASE=7.1.3
+ARG A_RELEASE=7.1.5
 ARG A_DB_USER='docker'
 ARG A_DB_PASS='docker'
 ARG A_DB_NAME='docker'
@@ -88,4 +88,5 @@ RUN chmod +x config/my_wrapper_script.sh &&\
 # Expose port 80
 EXPOSE 80
 
+# Run bash script
 CMD ["./config/my_wrapper_script.sh"]
