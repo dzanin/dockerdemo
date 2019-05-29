@@ -13,7 +13,7 @@ LABEL maintainer="davide.zanin@supsi.ch"
 # you can passing it during build with --build-arg RELEASE=x.x.x
 # Setting Release, Time Zone and DB parameters
 ARG FEND_RELEASE=1.0.0
-ARG SERVER_RELEASE=7.1.7
+ARG SERVER_RELEASE=7.1.8
 ARG A_DB_USER='docker'
 ARG A_DB_PASS='docker'
 ARG A_DB_NAME='docker'
@@ -92,7 +92,7 @@ RUN chmod +x server/config/my_wrapper_script.sh &&\
     rm /etc/nginx/sites-enabled/default &&\
 #    chown -R $USER:$USER /var/www/example.com/html &&\
 #    mv html/index.html /var/www/example.com/html/ &&\
-    chown -R $USER:$USER /usr/src/swisstopo/server/html &&\
+    chown -R $USER:$USER /usr/src/swisstopo/html &&\
     mv config/example.com /etc/nginx/sites-available/ &&\
     mv config/proxy.conf /etc/nginx/proxy.conf &&\
     ln -s /etc/nginx/sites-available/example.com /etc/nginx/sites-enabled/ 
