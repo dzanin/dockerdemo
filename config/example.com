@@ -2,12 +2,12 @@ server {
         listen 80;
         listen [::]:80;
 
-        root /usr/src/bms/api/html;
+        root /usr/src/swisstopo/html;
         index index.html index.htm index.nginx-debian.html;
 
-        server_name example.com www.example.com;
+        server_name swisstopo.ch www.swisstopo.ch;
 
-        location /bms/api/ {
+        location /bms/html/ {
                 proxy_pass      http://localhost:8888/;
                 include         /etc/nginx/proxy.conf;
         }

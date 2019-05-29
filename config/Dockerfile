@@ -61,7 +61,7 @@ RUN apt-get -y update &&\
     apt-get -y install nano
 
 # Switch to app directory
-WORKDIR /usr/src/swisstopo
+WORKDIR /usr/src/swisstopo/server
 
 # Install requirements, add user/group docker
 RUN  python3.7 -m pip install -r requirements.txt &&\
@@ -79,7 +79,7 @@ USER postgres
 RUN /etc/init.d/postgresql start &&\
     psql --command "CREATE USER ${DB_USER} WITH PASSWORD '${DB_PASS}'; SET TIME ZONE '${TZ}';" &&\
     createdb -O ${DB_USER} ${DB_NAME} &&\
-    psql -U postgres -d ${DB_NAME} -a -f server/config/table.sql
+    psql -U postgres -d ${DB_NAME} -a -f config/table.sql
 
 # Add VOLUMEs to allow backup of config, logs and databases
 VOLUME  ["/etc/postgresql", "/var/log/postgresql", "/var/lib/postgresql"]    
@@ -88,7 +88,7 @@ VOLUME  ["/etc/postgresql", "/var/log/postgresql", "/var/lib/postgresql"]
 USER root
 
 
-RUN chmod +x server/config/my_wrapper_script.sh &&\
+RUN chmod +x config/my_wrapper_script.sh &&\
     rm /etc/nginx/sites-enabled/default &&\
 #    chown -R $USER:$USER /var/www/example.com/html &&\
 #    mv html/index.html /var/www/example.com/html/ &&\
@@ -103,4 +103,4 @@ RUN chmod +x server/config/my_wrapper_script.sh &&\
 EXPOSE 80
 
 # Run bash script
-CMD ["./server/config/my_wrapper_script.sh"]
+CMD ["./config/my_wrapper_script.sh"]
