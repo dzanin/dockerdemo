@@ -56,7 +56,7 @@ RUN apt-get -y update &&\
     mkdir -p /usr/src/swisstopo/server &&\
     mkdir -p /usr/src/swisstopo/html &&\ 
     mv ${SERVER_NAME_REPO}-${SERVER_RELEASE_VERSION}/* /usr/src/swisstopo/server/  &&\
-    mv ${FEND_NAME_REPO}-${FE_RELEASE_VERSION}/* /usr/src/swisstopo/html/ &&\
+    mv ${FEND_NAME_REPO}-${FEND_RELEASE_VERSION}/* /usr/src/swisstopo/html/ &&\
     apt-get -y install nginx &&\
     apt-get -y install nano
 
