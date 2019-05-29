@@ -3,7 +3,7 @@
 # Test with:
 # sudo docker run -it --rm --name demodockerContainer -p 80:80 davidezanin/demodocker:vx.x.x /bin/sh 
 # Run with:
-# sudo docker run --name demodockerContainer -p 8080:80 davidezanin/demodocker:vx.x.x
+# sudo docker run -d --name demodockerContainer -p 8080:80 davidezanin/demodocker:vx.x.x
 
 FROM ubuntu
 
@@ -12,13 +12,22 @@ LABEL maintainer="davide.zanin@supsi.ch"
 # Setting default args that become an env variable,
 # you can passing it during build with --build-arg RELEASE=x.x.x
 # Setting Release, Time Zone and DB parameters
-ARG A_RELEASE=7.1.5
+ARG FEND_RELEASE=1.0.0
+ARG SERVER_RELEASE=7.1.5
 ARG A_DB_USER='docker'
 ARG A_DB_PASS='docker'
 ARG A_DB_NAME='docker'
 ARG A_TZ='Europe/Rome'
+ARG A_REPO_PATH='https://github.com/dzanin'
+ARG A_FEND_NAME_REPO='dockerdemoFE'
+ARG A_SERVER_NAME_REPO='dockerdemo'
 
-ENV RELEASE_VERSION=${A_RELEASE}
+
+ENV FEND_RELEASE_VERSION=${FEND_RELEASE}
+ENV SERVER_RELEASE_VERSION=${SERVER_RELEASE}
+ENV REPO_PATH=${A_REPO_PATH}
+ENV FEND_NAME_REPO=${A_FEND_NAME_REPO}
+ENV SERVER_NAME_REPO=${A_SERVER_NAME_REPO}
 ENV DB_USER=${A_DB_USER}
 ENV DB_PASS=${A_DB_PASS}
 ENV DB_NAME=${A_DB_NAME}
@@ -38,15 +47,21 @@ RUN apt-get -y update &&\
     apt-get -y install python3-pip &&\
     DEBIAN_FRONTEND=noninteractive apt-get -y install postgresql postgresql-contrib &&\
     apt-get -y install wget &&\
-    wget https://github.com/dzanin/dockerdemo/archive/${RELEASE_VERSION}.tar.gz &&\
-    tar xvzf ${RELEASE_VERSION}.tar.gz &&\
-    mkdir -p /usr/src/bms/api &&\
-    mv dockerdemo-${RELEASE_VERSION}/app/* /usr/src/bms/api/  &&\
+    wget ${REPO_PATH}/${SERVER_NAME_REPO}/archive/${SERVER_RELEASE_VERSION}.tar.gz &&\
+    mv ${SERVER_RELEASE_VERSION}.tar.gz server.tar.gz &&\
+    wget ${REPO_PATH}/${FEND_NAME_REPO}/archive/${FEND_RELEASE_VERSION}.tar.gz &&\
+    mv ${FEND_RELEASE_VERSION}.tar.gz html.tar.gz &&\
+    tar xvzf server.tar.gz &&\
+    tar xvzf html.tar.gz &&\
+    mkdir -p /usr/src/swisstopo/server &&\
+    mkdir -p /usr/src/swisstopo/html &&\ 
+    mv ${SERVER_NAME_REPO}-${SERVER_RELEASE_VERSION}/* /usr/src/swisstopo/server/  &&\
+    mv ${FEND_NAME_REPO}-${FE_RELEASE_VERSION}/* /usr/src/swisstopo/html/ &&\
     apt-get -y install nginx &&\
     apt-get -y install nano
 
 # Switch to app directory
-WORKDIR /usr/src/bms/api
+WORKDIR /usr/src/swisstopo
 
 # Install requirements, add user/group docker
 RUN  python3.7 -m pip install -r requirements.txt &&\
@@ -64,7 +79,7 @@ USER postgres
 RUN /etc/init.d/postgresql start &&\
     psql --command "CREATE USER ${DB_USER} WITH PASSWORD '${DB_PASS}'; SET TIME ZONE '${TZ}';" &&\
     createdb -O ${DB_USER} ${DB_NAME} &&\
-    psql -U postgres -d ${DB_NAME} -a -f db/table.sql
+    psql -U postgres -d ${DB_NAME} -a -f server/config/table.sql
 
 # Add VOLUMEs to allow backup of config, logs and databases
 VOLUME  ["/etc/postgresql", "/var/log/postgresql", "/var/lib/postgresql"]    
@@ -73,12 +88,11 @@ VOLUME  ["/etc/postgresql", "/var/log/postgresql", "/var/lib/postgresql"]
 USER root
 
 
-RUN chmod +x config/my_wrapper_script.sh &&\
+RUN chmod +x server/config/my_wrapper_script.sh &&\
     rm /etc/nginx/sites-enabled/default &&\
-    mkdir -p /var/www/example.com/html &&\
 #    chown -R $USER:$USER /var/www/example.com/html &&\
 #    mv html/index.html /var/www/example.com/html/ &&\
-    chown -R $USER:$USER /usr/src/bms/api/html &&\
+    chown -R $USER:$USER /usr/src/swisstopo/server/html &&\
     mv config/example.com /etc/nginx/sites-available/ &&\
     mv config/proxy.conf /etc/nginx/proxy.conf &&\
     ln -s /etc/nginx/sites-available/example.com /etc/nginx/sites-enabled/ 
@@ -89,4 +103,4 @@ RUN chmod +x config/my_wrapper_script.sh &&\
 EXPOSE 80
 
 # Run bash script
-CMD ["./config/my_wrapper_script.sh"]
+CMD ["./server/config/my_wrapper_script.sh"]
