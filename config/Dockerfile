@@ -13,7 +13,7 @@ LABEL maintainer="davide.zanin@supsi.ch"
 # you can passing it during build with --build-arg RELEASE=x.x.x
 # Setting Release, Time Zone and DB parameters
 ARG FEND_RELEASE=1.0.0
-ARG SERVER_RELEASE=7.2.0
+ARG SERVER_RELEASE=7.2.1
 ARG A_DB_USER='docker'
 ARG A_DB_PASS='docker'
 ARG A_DB_NAME='docker'
