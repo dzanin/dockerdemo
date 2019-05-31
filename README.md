@@ -8,20 +8,20 @@ with python3.7, postgreSQL and nginx installed
 
 Open a terminal and run this command to pull the image
 
-`docker pull davidezanin/demodocker:vx.x.x`
+`docker pull davidezanin/demodocker:x.x.x`
 
 To create the docker image, docker file should be in this folder, 
 use release version instead of x.x.x (e.g. RELEASE=7.1.5):
 
-`docker build --build-arg RELEASE=x.x.x -t davidezanin/demodocker:vx.x.x . `
+`docker build --build-arg RELEASE=x.x.x -t davidezanin/demodocker:x.x.x . `
 
 To create and start the container:
 
-`sudo docker run -d --name demodockerContainer -p 80:80 davidezanin/demodocker:vx.x.x`
+`sudo docker run -d --name demodockerContainer -p 80:80 davidezanin/demodocker:x.x.x`
 
 To create and start the container using the console (example to try flat project):
 
-`sudo docker run -it --name demodockerContainer -p 80:80 davidezanin/demodocker:vx.x.x /bin/sh`
+`sudo docker run -it --name demodockerContainer -p 80:80 davidezanin/demodocker:x.x.x /bin/sh`
 
 To start after the first run:
 
