@@ -1,9 +1,9 @@
 # Build with (x.x.x means release version number):
-# sudo docker build --build-arg RELEASE=x.x.x -t davidezanin/demodocker:vx.x.x . 
+# sudo docker build --build-arg RELEASE=x.x.x -t davidezanin/demodocker:x.x.x . 
 # Test with:
-# sudo docker run -it --rm --name demodockerContainer -p 80:80 davidezanin/demodocker:vx.x.x /bin/sh 
+# sudo docker run -it --rm --name demodockerContainer -p 80:80 davidezanin/demodocker:x.x.x /bin/sh 
 # Run with:
-# sudo docker run -d --name demodockerContainer -p 8080:80 davidezanin/demodocker:vx.x.x
+# sudo docker run -d --name demodockerContainer -p 8080:80 davidezanin/demodocker:x.x.x
 
 FROM ubuntu
 
@@ -13,7 +13,7 @@ LABEL maintainer="davide.zanin@supsi.ch"
 # you can passing it during build with --build-arg RELEASE=x.x.x
 # Setting Release, Time Zone and DB parameters
 ARG FEND_RELEASE=1.0.0
-ARG SERVER_RELEASE=7.1.9
+ARG SERVER_RELEASE=7.2.0
 ARG A_DB_USER='docker'
 ARG A_DB_PASS='docker'
 ARG A_DB_NAME='docker'

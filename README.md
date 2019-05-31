@@ -1,7 +1,7 @@
 # dockerdemo
 
-In this repository you can find a demo to create a docker based on ubuntu with 
-python3.7, postgreSQL, nginx installed
+In this repository you can find a demo to create a docker image based on ubuntu 
+with python3.7, postgreSQL and nginx installed
 
 
 ## Build docker image and run
@@ -31,9 +31,15 @@ To stop:
 
 `docker stop demodockerContainer`
 
-Inspect:
+## Inspect and run commands
+
+To inspect:
 
 `docker inspect demodockerContainer`
+
+To open bash (or running command) on running container in detached mode
+
+`docker exec -i -t demodockerContainer bash`
 
 
 ## List containers/images
