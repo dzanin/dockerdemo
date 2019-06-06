@@ -79,11 +79,24 @@ Delete dangling images:
 
 `docker rmi -f $(docker images -f "dangling=true" -q)`
 
+Delete  - all stopped containers,
+        - all networks not used by at least one container,
+        - all volumes not used by at least one container,
+        - all dangling images,
+        - all dangling build cache ,
+	- and with the option --volumes also unused volumes,
+	
+`docker system prune --volumes`
+
+
+
 ##Push on dockerhub
 
 Push images on dockerhub (tagged during build):
 
 `docker login`
 `docker push davidezanin/demodocker`
+
+
 
 
